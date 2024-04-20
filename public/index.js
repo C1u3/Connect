@@ -16,20 +16,13 @@
         app.querySelector(".chat-screen").classList.add("active");
     });
 
-    app.querySelector(".chat-screen #send-message").addEventListener("click", function() {
-        let message = app.querySelector(".chat-screen #message-input").value;
-        if (message.length == 0) {
+    app.querySelector(".chat-screen #send-message").addEventListener("click", sendMessage);
+
+    window.addEventListener("keyup", function(event) {
+        if (event.key != "Enter") {
             return;
         }
-        renderMessage("my", {
-            username: uname,
-            text: message
-        });
-        socket.emit("chat", {
-            username: uname,
-            text: message
-        });
-        app.querySelector(".chat-screen #message-input").value = "";
+        sendMessage();
     });
 
     app.querySelector(".chat-screen #exit-chat").addEventListener("click", function() {
@@ -44,6 +37,22 @@
     socket.on("chat", function(message) {
         renderMessage("other", message);
     });
+
+    function sendMessage() {
+        let message = app.querySelector(".chat-screen #message-input").value;
+        if (message.length == 0) {
+            return;
+        }
+        renderMessage("my", {
+            username: uname,
+            text: message
+        });
+        socket.emit("chat", {
+            username: uname,
+            text: message
+        });
+        app.querySelector(".chat-screen #message-input").value = "";
+    }
 
     function renderMessage(type, message) {
         let messageContainer = app.querySelector(".chat-screen .messages");
